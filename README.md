@@ -1,163 +1,587 @@
-# Feature Flag Management Application
+# 🚩 Feature Flag Management Platform
 
-AWS-based feature flag platform with tenant-scoped realtime browser updates through Centrifugo.
+An AWS-based feature flag platform for managing, evaluating, and delivering tenant-scoped feature flags to applications in realtime.
 
-## Project Status
+Built with a TypeScript/OpenFeature SDK, DynamoDB, AWS Lambda, Kafka/MSK, Centrifugo, ECS/Fargate, and OpenTofu, the platform demonstrates an end-to-end feature flag architecture where changes can propagate to connected applications without requiring a redeployment or page refresh.
 
-This repository is a standalone portfolio implementation. It includes a working
-feature-flag API, tenant-scoped authentication, a TypeScript/OpenFeature SDK, realtime delivery, local demos,
-OpenTofu infrastructure, CI checks, and consumer integration guidance.
+![CI](https://github.com/dj-berg/feature-flag-management-application/actions/workflows/ci.yml/badge.svg)
 
-Local repository validation passes for builds, SDK tests, consumer smoke tests,
-example checks, dependency scanning, and OpenTofu formatting and validation.
-This is an architectural demonstration, not a production-certified hosted
-service; deployment requires environment-specific security and operational review.
+---
 
-## Repository Map
+## 📸 Project Preview
 
-- `functions/` contains API, authorizer, and DynamoDB Stream-to-Kafka Lambda packages.
-- `consumer-sdk/` is the TypeScript SDK and its React/OpenFeature entry points.
-- `local-app/` and `consumer-app/` are local Express demonstrations.
-- `test-consumer/` is a minimal SDK integration consumer.
-- `examples/next-openfeature/` is a Next.js/OpenFeature example and acceptance helper.
-- `tofu/` provisions the API, Lambdas, DynamoDB table, IAM, and stream mapping.
-- `infra/centrifugo/` provisions Centrifugo on ECS/Fargate with its MSK bridge.
-- `docs/` contains architecture, integration, reliability, and readiness documentation.
+<!--
+============================================================
+IMAGE 1 OF 4 — FEATURE FLAG MANAGEMENT DASHBOARD
 
-## Runtime Contracts
+Add a clean screenshot of the operator-facing dashboard
+showing several feature flags.
 
-The current service stores flags in DynamoDB, publishes tenant-scoped changes through Kafka and Centrifugo, and exposes SSE to the browser apps. The platform's API, JWT claims, DynamoDB schema, Kafka topics, Centrifugo channels, and AWS resource behavior are runtime contracts. Repository-quality changes must preserve them.
+Save as:
+docs/images/feature-flag-dashboard.png
+============================================================
+-->
 
-## Use It In Another Application
+![Feature Flag Management Dashboard](docs/images/feature-flag-dashboard.png)
 
-For credential onboarding, SDK installation, OpenFeature evaluation, API flag management, realtime behavior, and production guidance, see:
+*Operator-facing dashboard for viewing and managing application feature flags.*
 
-- [`docs/consumer-integration.md`](docs/consumer-integration.md)
-- [`consumer-sdk/README.md`](consumer-sdk/README.md)
-- [`examples/next-openfeature/README.md`](examples/next-openfeature/README.md)
+---
 
-## Prerequisites And Setup
+## 🎯 Project Overview
 
-Use Node.js 20 or newer and OpenTofu. From a clean clone, install every package dependency with:
+Modern applications often need to enable, disable, or modify features without requiring a new deployment. This project demonstrates an end-to-end platform designed around that problem.
+
+Operators manage feature flags through the platform, while consuming applications evaluate those flags through a reusable TypeScript SDK and OpenFeature integration.
+
+Flag state is stored in DynamoDB, while changes propagate through an event-driven realtime pipeline using DynamoDB Streams, AWS Lambda, Kafka/MSK, and Centrifugo.
+
+Connected browser applications can receive tenant-scoped updates and react to feature changes without requiring a page refresh.
+
+This repository is a standalone portfolio implementation and architectural demonstration rather than a production-certified hosted service.
+
+---
+
+## ✨ Key Features
+
+- 🚩 **Feature Flag Management** — Create and modify application feature flags through a centralized API.
+- 🔐 **Tenant-Scoped Authentication** — Isolates feature flag access and realtime updates between consumers.
+- ⚡ **Realtime Updates** — Propagates flag changes to connected applications without page refreshes.
+- 📦 **TypeScript SDK** — Provides applications with a reusable interface for consuming and evaluating flags.
+- 🔌 **OpenFeature Integration** — Supports standards-based feature flag evaluation.
+- ⚛️ **React & Next.js Integration** — Includes React entry points and a Next.js/OpenFeature example.
+- ☁️ **AWS Infrastructure** — Uses serverless and containerized AWS services to support the platform.
+- 🏗️ **Infrastructure as Code** — OpenTofu defines and validates the cloud infrastructure.
+- 🔄 **Automated CI** — GitHub Actions validates builds, integrations, infrastructure, dependencies, and repository security.
+
+---
+
+## 🏗️ Architecture
+
+<!--
+============================================================
+IMAGE 2 OF 4 — ARCHITECTURE DIAGRAM
+
+Create a diagram showing approximately:
+
+Operator / Dashboard
+        ↓
+Feature Flag API
+        ↓
+DynamoDB
+        ↓
+DynamoDB Streams
+        ↓
+Lambda Stream Publisher
+        ↓
+Kafka / Amazon MSK
+        ↓
+Centrifugo on ECS/Fargate
+        ↓
+Consumer Application
+
+Save as:
+docs/images/architecture.png
+============================================================
+-->
+
+![Feature Flag Platform Architecture](docs/images/architecture.png)
+
+The platform uses an event-driven architecture to move feature flag changes from management to consuming applications.
+
+```text
+Operator / Dashboard
+        │
+        ▼
+Feature Flag API
+        │
+        ▼
+     DynamoDB
+        │
+        ▼
+ DynamoDB Streams
+        │
+        ▼
+ Lambda Publisher
+        │
+        ▼
+   Kafka / MSK
+        │
+        ▼
+    Centrifugo
+        │
+        ▼
+Consumer Application
+```
+
+Feature flag state is persisted in DynamoDB. Changes captured through DynamoDB Streams are processed by a Lambda publisher and sent through Kafka.
+
+Centrifugo then distributes tenant-scoped realtime updates to connected clients.
+
+The platform's API, authentication claims, DynamoDB schema, Kafka topics, Centrifugo channels, and AWS resource behavior form its primary runtime contracts.
+
+---
+
+## 🔄 End-to-End Feature Flag Flow
+
+1. An operator creates or modifies a feature flag through the feature flag API.
+2. The API stores the current flag state in DynamoDB.
+3. DynamoDB Streams captures the change.
+4. A Lambda stream publisher publishes the event to Kafka.
+5. The Centrifugo bridge receives the tenant-scoped event.
+6. Centrifugo distributes the update to connected browser clients.
+7. The consuming application responds to the new flag state without requiring a page refresh.
+
+This architecture separates **flag management**, **flag evaluation**, and **realtime propagation** while allowing applications to consume flags through a reusable SDK.
+
+---
+
+## 🖥️ Consumer Application
+
+<!--
+============================================================
+IMAGE 3 OF 4 — CONSUMER APPLICATION
+
+Add a screenshot of the consumer application demonstrating
+a feature being controlled by a feature flag.
+
+Save as:
+docs/images/consumer-app.png
+============================================================
+-->
+
+![Feature Flag Consumer Application](docs/images/consumer-app.png)
+
+*Example consumer demonstrating how application behavior can be controlled through feature flags.*
+
+Applications can integrate with the platform through the TypeScript SDK or OpenFeature provider rather than implementing the platform's underlying API and realtime behavior directly.
+
+The repository includes several integration examples:
+
+- `consumer-app/` — consumer application demonstration
+- `test-consumer/` — minimal SDK integration consumer
+- `examples/next-openfeature/` — Next.js application using OpenFeature
+
+---
+
+## ⚡ Realtime Feature Updates
+
+<!--
+============================================================
+IMAGE 4 OF 4 — REALTIME DEMO GIF
+
+Recommended recording:
+
+1. Show dashboard and consumer side-by-side.
+2. Change or toggle a feature flag.
+3. Show the consumer automatically reacting.
+4. Do not refresh the consumer browser.
+
+Save as:
+docs/images/realtime-feature-flags.gif
+============================================================
+-->
+
+![Realtime Feature Flag Demo](docs/images/realtime-feature-flags.gif)
+
+*Feature flag changes propagate to connected consumers without requiring a page refresh.*
+
+Realtime delivery is tenant-scoped so connected consumers receive updates intended for their application context.
+
+The realtime infrastructure uses Kafka/MSK as part of the event path and Centrifugo on ECS/Fargate for client delivery.
+
+---
+
+## 🛠️ Technology Stack
+
+| Area | Technologies |
+|---|---|
+| **Application** | Node.js, JavaScript, TypeScript, React, Next.js |
+| **Feature Flags** | OpenFeature, Custom TypeScript SDK |
+| **Cloud** | AWS |
+| **AWS Services** | Lambda, DynamoDB, DynamoDB Streams, IAM, ECS/Fargate |
+| **Realtime** | Kafka / Amazon MSK, Centrifugo, WSS |
+| **Infrastructure** | OpenTofu |
+| **Build Tooling** | npm, TypeScript, Babel |
+| **CI/CD** | GitHub Actions |
+| **Security & Validation** | Gitleaks, npm audit, automated repository checks |
+| **Version Control** | Git, GitHub |
+
+---
+
+## 📁 Repository Structure
+
+```text
+feature-flag-management-application/
+│
+├── .github/
+│   └── workflows/              # GitHub Actions CI
+│
+├── consumer-app/               # Consumer application demonstration
+├── consumer-sdk/               # TypeScript SDK and OpenFeature integration
+│
+├── docs/                       # Architecture and operational documentation
+│
+├── examples/
+│   └── next-openfeature/       # Next.js/OpenFeature integration example
+│
+├── functions/                  # API, authorization, and stream Lambda packages
+│
+├── infra/
+│   └── centrifugo/             # Centrifugo ECS/Fargate infrastructure
+│
+├── local-app/                  # Operator-facing local dashboard
+├── scripts/                    # Repository validation and utility scripts
+├── shared/                     # Shared platform components
+├── test-consumer/              # Minimal SDK consumer
+├── tofu/                       # Core AWS OpenTofu infrastructure
+│
+├── CONTRIBUTING.md
+├── SECURITY.md
+├── package.json
+└── README.md
+```
+
+### Major Components
+
+**`functions/`**  
+Contains the API, authorization, and DynamoDB Stream-to-Kafka Lambda packages.
+
+**`consumer-sdk/`**  
+Contains the TypeScript SDK along with its React and OpenFeature entry points.
+
+**`local-app/`**  
+Provides an operator-facing demonstration for working with feature flags.
+
+**`consumer-app/`**  
+Demonstrates how an application can respond to feature flag state.
+
+**`test-consumer/`**  
+Provides a minimal example of integrating directly with the SDK.
+
+**`examples/next-openfeature/`**  
+Demonstrates integration from a Next.js application through OpenFeature.
+
+**`tofu/`**  
+Defines the core API, Lambda, DynamoDB, IAM, and stream infrastructure.
+
+**`infra/centrifugo/`**  
+Defines the Centrifugo ECS/Fargate and MSK-related infrastructure.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+Install:
+
+- Node.js 20+
+- npm
+- OpenTofu
+- Git
+
+Clone the repository:
+
+```sh
+git clone https://github.com/dj-berg/feature-flag-management-application.git
+cd feature-flag-management-application
+```
+
+Install project dependencies:
 
 ```sh
 npm run setup
 ```
 
-This uses the committed lockfiles and does not contact AWS or deploy anything. Copy the relevant template before starting an app:
+The setup process uses the committed package lockfiles and does not deploy AWS resources.
+
+---
+
+## 🔐 Environment Configuration
+
+Environment templates are provided for the applications.
+
+For example:
 
 ```sh
 cp local-app/.env.example local-app/.env
 cp consumer-app/.env.example consumer-app/.env
 ```
 
-Fill in the values for your environment. Never commit `.env` files or real credentials.
+Populate the required values for your environment before starting the applications.
 
-For OpenTofu deployments, provide `jwt_private_key`, `jwt_public_key`, and
-`consumer_jwt_public_key` explicitly through a secret-aware variable mechanism.
-The configuration intentionally has no usable key defaults. Set
-`onboarding_api_key` before using the onboarding route; an empty value
-intentionally fails closed and disables onboarding.
-
-## Run The Demos
-
-The local dashboard is the operator-facing view of current flags. The consumer app shows how an end-user application reacts to flag changes. Start them in separate terminals:
-
-```sh
-npm run dev:local       # http://localhost:3000
-npm run dev:consumer    # http://localhost:3001
-```
-
-For the minimal SDK-only consumer, use `test-consumer/.env.example` and run:
+For the minimal SDK consumer:
 
 ```sh
 cp test-consumer/.env.example test-consumer/.env
-# Set CLIENT_ID, CLIENT_SECRET, and FEATURE_FLAGS_API_URL first
-npm run dev:test-consumer # http://localhost:3002
 ```
 
-These demos require reachable API and realtime services. They are not substitutes for deploying the infrastructure.
+Configure the required consumer credentials and API URL before running the application.
 
-## End-To-End Flow
+> Never commit `.env` files, credentials, private keys, state files, or environment-specific secrets.
 
-1. Configure a consumer credential and API/realtime URLs in the selected app's `.env`.
-2. Start the local dashboard or consumer demo.
-3. Create or change a flag through the feature-flag API.
-4. The API stores the flag in DynamoDB.
-5. DynamoDB Streams sends the change to the stream publisher, which publishes to Kafka.
-6. The Centrifugo bridge publishes the tenant-scoped update to connected browsers.
-7. The dashboard or consumer app updates without a page refresh.
+---
 
-If you only want to verify the repository after cloning, run `npm run check`; it is credential-free and does not start services.
+## ▶️ Running the Applications
 
-## Root Validation
-
-From the repository root:
+Start the operator-facing dashboard:
 
 ```sh
-npm run check          # all credential-free static and package checks
-npm run lint           # JavaScript syntax checks
-npm run format         # OpenTofu formatting check
-npm run security       # audits the existing package lockfiles
+npm run dev:local
 ```
 
-The aggregate check builds and type-checks the SDK, runs SDK and consumer smoke tests, validates the Next.js example imports/types, and formats/validates both OpenTofu stacks. It does not start servers or contact AWS, Kafka, Centrifugo, or deployed endpoints.
+Default address:
 
-Run infrastructure checks independently when working on a stack:
+```text
+http://localhost:3000
+```
+
+Start the consumer demonstration:
+
+```sh
+npm run dev:consumer
+```
+
+Default address:
+
+```text
+http://localhost:3001
+```
+
+Start the minimal SDK consumer:
+
+```sh
+npm run dev:test-consumer
+```
+
+Default address:
+
+```text
+http://localhost:3002
+```
+
+The live demonstrations require reachable API and realtime services. Running the local applications alone does not deploy the underlying AWS infrastructure.
+
+---
+
+## 📦 SDK & OpenFeature Integration
+
+The platform includes a reusable TypeScript SDK that allows consuming applications to interact with feature flags without implementing the platform's underlying API and realtime behavior themselves.
+
+The SDK includes:
+
+- TypeScript interfaces
+- Feature flag evaluation
+- React integration
+- OpenFeature provider support
+- Browser-compatible build artifacts
+
+For integration details, see:
+
+- [`consumer-sdk/README.md`](consumer-sdk/README.md)
+- [`docs/consumer-integration.md`](docs/consumer-integration.md)
+- [`examples/next-openfeature/README.md`](examples/next-openfeature/README.md)
+
+---
+
+## 🧪 Testing & Validation
+
+The repository includes credential-free validation that can be run without deploying infrastructure or contacting AWS.
+
+Run the complete repository check:
+
+```sh
+npm run check
+```
+
+Additional checks:
+
+```sh
+npm run lint
+npm run format
+npm run security
+```
+
+The aggregate validation covers:
+
+- TypeScript SDK builds
+- SDK type checking
+- SDK tests
+- Consumer smoke tests
+- Local application builds
+- Next.js/OpenFeature example validation
+- OpenTofu formatting
+- OpenTofu configuration validation
+- Locked dependency auditing
+
+Infrastructure stacks can also be validated independently:
 
 ```sh
 npm run check:tofu:main
 npm run check:tofu:centrifugo
 ```
 
-These commands initialize providers with the backend disabled and run validation only. They do not plan, apply, mutate state, or create deployment artifacts.
+These commands initialize the required providers with the backend disabled and perform validation only.
 
-The Centrifugo deployment requires an ACM certificate in
-`centrifugo_alb_certificate_arn`; the ALB redirects HTTP to HTTPS and the public
-realtime URL uses WSS. Local applications may still use local HTTP/WS endpoints.
+They do not plan, apply, mutate state, or deploy infrastructure.
 
-## Local Apps And Live Validation
+---
 
-Run `npm start` from `local-app`, `consumer-app`, or `test-consumer` after configuring the required environment. The local dashboard defaults to port 3000; set `PORT=3001` for the consumer app when running both. Live realtime validation is documented in [`docs/realtime-reliability-validation.md`](docs/realtime-reliability-validation.md) and is intentionally not a pull-request gate.
+## 🔄 Continuous Integration
 
-## Safety
+GitHub Actions automatically validates repository changes.
 
-Do not commit `.env`, Terraform/OpenTofu state, plan files, generated Lambda archives, `node_modules`, `dist`, or build output. See [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`SECURITY.md`](SECURITY.md).
+```text
+Checkout Repository
+        │
+        ▼
+Configure Node.js
+        │
+        ▼
+Install + Build SDK
+        │
+        ▼
+Package SDK
+        │
+        ▼
+Install Application Dependencies
+        │
+        ▼
+Install OpenTofu
+        │
+        ▼
+Run Deterministic Checks
+        │
+        ▼
+Audit Dependencies
+```
 
-## Publishing This Portfolio Version
+A separate security job scans the repository for accidentally committed secrets.
 
-Publish only the reviewed current tree, not this working repository's Git
-history. Earlier development history contained environment-specific deployment
-artifacts and internal process files, even though the current tree and secret
-scans are clean. Use a fresh directory or a new repository with no copied `.git`
-directory, then copy the reviewed files and run the checks again before pushing.
+Current repository validation includes:
 
-Before publishing:
+- ✅ Repository checks
+- ✅ SDK build validation
+- ✅ Consumer integration checks
+- ✅ Local application build validation
+- ✅ OpenTofu validation
+- ✅ Dependency auditing
+- ✅ Secret scanning
 
-1. Confirm `git status --ignored` contains no credentials, state, plans, archives, or `.env` files that will be copied.
-2. Run `npm run check` and `npm run security`.
-3. Run `gitleaks detect --source . --redact` on the final snapshot.
-4. Search the final snapshot for employer names, internal URLs, account IDs, emails, and environment-specific identifiers.
-5. Confirm no real credential has ever been used in the new repository's history.
+---
 
-The repository is suitable as a portfolio code sample after those publication
-steps. It is not a hosted service or a production approval; deployment still
-requires the staging and production review described in
-[`docs/production-readiness.md`](docs/production-readiness.md).
+## 🔒 Security
 
-For the complete transfer gate, use [`docs/publication-checklist.md`](docs/publication-checklist.md).
+The repository is designed to keep environment-specific and sensitive artifacts outside version control.
 
-## Next Steps For A New Owner
+Do not commit:
 
-1. Deploy the stacks into an isolated staging environment with test credentials.
-2. Run the staging checklist in [`docs/production-readiness.md`](docs/production-readiness.md).
-3. Review the API Gateway onboarding/auth security model and confirm edge protection and rate limiting.
-4. Confirm production alarms, dashboards, rollback, and credential-rotation procedures.
-5. Resolve or formally accept any remaining security findings before production approval.
+```text
+.env
+node_modules/
+dist/
+*.tfstate
+*.tfplan
+generated Lambda archives
+private keys
+credentials
+environment-specific configuration
+```
 
-## Architecture References
+Infrastructure credentials and cryptographic material must be supplied through an appropriate secret-aware mechanism.
 
-- [`docs/current-architecture.md`](docs/current-architecture.md) describes the current architecture.
-- The current architecture and integration documents describe the supported runtime contracts.
-- [`docs/realtime-reliability-validation.md`](docs/realtime-reliability-validation.md) is the live reliability runbook.
-- [`docs/production-readiness.md`](docs/production-readiness.md) is the staging and production approval checklist.
+See [`SECURITY.md`](SECURITY.md) for additional security guidance.
+
+---
+
+## 📚 Documentation
+
+Detailed technical and operational documentation is available under `docs/`.
+
+### Architecture
+
+[`docs/current-architecture.md`](docs/current-architecture.md)
+
+Describes the current system architecture and runtime contracts.
+
+### Consumer Integration
+
+[`docs/consumer-integration.md`](docs/consumer-integration.md)
+
+Covers SDK installation, OpenFeature evaluation, authentication, API usage, and realtime behavior.
+
+### Realtime Reliability
+
+[`docs/realtime-reliability-validation.md`](docs/realtime-reliability-validation.md)
+
+Provides validation and testing guidance for the realtime event pipeline.
+
+### Production Readiness
+
+[`docs/production-readiness.md`](docs/production-readiness.md)
+
+Documents staging, security, operational, monitoring, rollback, and production-readiness considerations.
+
+### Publication Checklist
+
+[`docs/publication-checklist.md`](docs/publication-checklist.md)
+
+Documents checks for reviewing the standalone portfolio implementation before publication.
+
+---
+
+## 💡 Engineering Highlights
+
+This project demonstrates experience across several areas of modern software engineering:
+
+- Cloud application architecture
+- Event-driven systems
+- Feature flag platform design
+- SDK development
+- API integration
+- Tenant-scoped authentication
+- Realtime messaging
+- React and Next.js integration
+- OpenFeature
+- Infrastructure as Code
+- AWS serverless architecture
+- Containerized cloud services
+- CI/CD
+- Dependency management
+- Automated security scanning
+- Technical documentation
+
+One of the project's primary engineering goals is to demonstrate the complete path between **managing a feature**, **persisting its state**, **propagating its change**, and **allowing another application to consume it**.
+
+---
+
+## ⚠️ Project Context
+
+This repository is a **standalone portfolio implementation** demonstrating feature flag platform architecture and software engineering practices.
+
+It is intended as an architectural and engineering demonstration rather than a production-certified hosted service.
+
+Deployment requires environment-specific security, infrastructure, reliability, and operational review.
+
+The public repository contains only the standalone implementation and should not contain proprietary infrastructure, production credentials, private environment configuration, or other sensitive deployment artifacts.
+
+---
+
+## 📖 Additional Resources
+
+- [Current Architecture](docs/current-architecture.md)
+- [Consumer Integration Guide](docs/consumer-integration.md)
+- [SDK Documentation](consumer-sdk/README.md)
+- [Next.js + OpenFeature Example](examples/next-openfeature/README.md)
+- [Realtime Reliability Validation](docs/realtime-reliability-validation.md)
+- [Production Readiness](docs/production-readiness.md)
+- [Publication Checklist](docs/publication-checklist.md)
+- [Contributing](CONTRIBUTING.md)
+- [Security](SECURITY.md)
+
+---
+
+## 📄 License
+
+This project is provided as a portfolio and educational software engineering demonstration.
