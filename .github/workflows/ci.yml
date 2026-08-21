@@ -29,6 +29,8 @@ jobs:
         run: npm ci --prefix examples/next-openfeature
       - name: Install OpenTofu
         uses: opentofu/setup-opentofu@v1
+      - name: Install local app dependencies
+        run: npm ci --prefix local-app
       - name: Run deterministic checks
         run: npm run check:ci
       - name: Audit locked dependencies
@@ -50,3 +52,4 @@ jobs:
           -v "$PWD:/repo:ro"
           zricethezav/gitleaks:v8.24.2
           detect --source=/repo --no-git --redact
+
