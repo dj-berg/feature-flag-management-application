@@ -28,7 +28,7 @@ jobs:
       - name: Install example dependencies
         run: npm ci --prefix examples/next-openfeature
       - name: Install OpenTofu
-        uses: opentofu/setup-opentofu@v1
+        uses: opentofu/setup-opentofu@v2
       - name: Install local app dependencies
         run: npm ci --prefix local-app
       - name: Run deterministic checks
