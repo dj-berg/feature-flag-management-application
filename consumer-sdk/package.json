@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@openfeature/web-sdk": "^1.6.1",
-    "centrifuge": "^5.7.0"
+    "centrifuge": "^5.7.1"
   },
   "scripts": {
     "prepare": "npm run build",
