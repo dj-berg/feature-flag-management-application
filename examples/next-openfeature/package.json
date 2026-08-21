@@ -16,7 +16,7 @@
   "dependencies": {
     "@openfeature/react-sdk": "^1.1.1",
     "@openfeature/web-sdk": "^1.6.1",
-    "feature-flag-management-application-sdk": "file:../../consumer-sdk/feature-flag-management-application-sdk-0.1.0.tgz",
+    "feature-flag-management-application-sdk": "file:../../consumer-sdk",
     "next": "16.3.1",
     "react": "19.1.1",
     "react-dom": "19.1.1"
