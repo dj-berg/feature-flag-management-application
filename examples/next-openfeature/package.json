@@ -18,7 +18,7 @@
     "@openfeature/web-sdk": "^1.6.1",
     "feature-flag-management-application-sdk": "file:../../consumer-sdk",
     "next": "16.3.1",
-    "react": "19.1.1",
+    "react": "19.2.8",
     "react-dom": "19.1.1"
   },
   "devDependencies": {
