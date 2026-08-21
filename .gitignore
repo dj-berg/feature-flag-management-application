@@ -29,3 +29,5 @@ local-app/public/app.js
 .trivyignore.local
 .snyk
 .terraform.d/
+
+consumer-sdk/*.tgz

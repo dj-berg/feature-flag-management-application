@@ -36,7 +36,7 @@
   "scripts": {
     "prepare": "npm run build",
     "build": "npm run clean && tsc -p tsconfig.json && node scripts/build-umd.mjs",
-    "clean": "rm -rf dist",
+    "clean": "node -e require('fs').rmSync('dist',{recursive:true,force:true})",
     "check": "tsc -p tsconfig.json --noEmit",
     "test": "npm run build && node --test test/*.test.mjs test/openfeature/*.test.mjs test/react/*.test.mjs"
   },
