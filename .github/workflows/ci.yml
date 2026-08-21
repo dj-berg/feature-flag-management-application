@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Repository checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install and package SDK
+        working-directory: consumer-sdk
+        run: |
+          npm ci
+          npm run build
+          npm pack --pack-destination .
+      - name: Install consumer app dependencies
+        run: npm ci --prefix consumer-app
+      - name: Install example dependencies
+        run: npm ci --prefix examples/next-openfeature
+      - name: Install OpenTofu
+        uses: opentofu/setup-opentofu@v1
+      - name: Run deterministic checks
+        run: npm run check:ci
+      - name: Audit locked dependencies
+        run: |
+          npm audit --audit-level=high --package-lock-only --prefix consumer-sdk
+          npm audit --audit-level=high --package-lock-only --prefix consumer-app
+          npm audit --audit-level=high --package-lock-only --prefix examples/next-openfeature
+
+  secret-scan:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan repository for secrets
+        run: >-
+          docker run --rm
+          -v "$PWD:/repo:ro"
+          zricethezav/gitleaks:v8.24.2
+          detect --source=/repo --no-git --redact

@@ -1,0 +1,26 @@
+flowchart TD
+    JWT[JWT]
+
+    JWT --> Std[Standard Claims]
+    Std --> Iss[iss]
+    Std --> Aud[aud]
+    Std --> Sub[sub]
+    Std --> Iat[iat]
+    Std --> Exp[exp]
+
+    JWT --> Type[token_type]
+    Type --> Admin[admin]
+    Type --> Consumer[consumer]
+
+    JWT --> Scope[scope]
+    Scope --> Read[flags:read]
+    Scope --> Subscribe[flags:subscribe]
+    Scope --> WriteAny[flags:write:any]
+
+    JWT --> Tenant[Tenant Claims]
+    Tenant --> Account[account_id]
+    Tenant --> App[application_id]
+
+    JWT --> RT[Realtime Claims Optional]
+    RT --> Channels[channels[]]
+    RT --> Subs[subs{}]

@@ -1,0 +1,31 @@
+{
+  "name": "feature-flag-management-application",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Generic feature flag management application",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "setup": "node scripts/setup-repo.mjs",
+    "install:all": "node scripts/setup-repo.mjs",
+    "dev:local": "npm --prefix local-app start",
+    "dev:consumer": "PORT=3001 npm --prefix consumer-app start",
+    "dev:test-consumer": "npm --prefix test-consumer start",
+    "format": "npm run format:check",
+    "format:check": "tofu fmt -check -recursive tofu infra/centrifugo",
+    "lint": "node scripts/check-javascript.mjs",
+    "check:sdk": "npm --prefix consumer-sdk run check",
+    "test:sdk": "npm --prefix consumer-sdk test",
+    "test:consumer-app": "npm --prefix consumer-app run build && npm --prefix consumer-app run test:smoke",
+    "build:local-app": "npm --prefix local-app run build",
+    "check:example": "npm --prefix examples/next-openfeature run check && npm --prefix examples/next-openfeature run validate:imports",
+    "check:tofu": "npm run check:tofu:main && npm run check:tofu:centrifugo",
+    "check:tofu:main": "tofu -chdir=tofu init -backend=false -input=false && tofu -chdir=tofu validate",
+    "check:tofu:centrifugo": "tofu -chdir=infra/centrifugo init -backend=false -input=false && tofu -chdir=infra/centrifugo validate",
+    "security": "node scripts/audit-packages.mjs",
+    "check": "npm run format:check && npm run lint && npm run check:sdk && npm run test:sdk && npm run test:consumer-app && npm run build:local-app && npm run check:example && npm run check:tofu",
+    "check:ci": "npm run check"
+  }
+}

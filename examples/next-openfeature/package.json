@@ -1,0 +1,30 @@
+{
+  "name": "next-openfeature-acceptance",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "check": "tsc --noEmit",
+    "validate:imports": "node scripts/validate-imports.mjs",
+    "setup:from-consumer-app": "node scripts/setup-from-consumer-app.cjs",
+    "acceptance:openfeature": "node scripts/acceptance-openfeature.cjs",
+    "flag:false": "node scripts/set-flag.cjs false",
+    "flag:true": "node scripts/set-flag.cjs true"
+  },
+  "dependencies": {
+    "@openfeature/react-sdk": "^1.1.1",
+    "@openfeature/web-sdk": "^1.6.1",
+    "feature-flag-management-application-sdk": "file:../../consumer-sdk/feature-flag-management-application-sdk-0.1.0.tgz",
+    "next": "16.3.1",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "typescript": "^5.9.2"
+  }
+}

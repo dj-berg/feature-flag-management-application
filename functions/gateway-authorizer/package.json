@@ -1,0 +1,11 @@
+{
+  "name": "gateway-authorizer",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "type": "commonjs",
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2",
+    "jwk-to-pem": "^2.0.7"
+  }
+}

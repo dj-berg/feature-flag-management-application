@@ -1,0 +1,47 @@
+{
+  "name": "feature-flag-management-application-sdk",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Reusable consumer feature flag SDK",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./openfeature": {
+      "types": "./dist/openfeature/index.d.ts",
+      "default": "./dist/openfeature/index.js"
+    },
+    "./browser": {
+      "default": "./dist/feature-flags.umd.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "default": "./dist/react/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "dependencies": {
+    "@openfeature/web-sdk": "^1.6.1",
+    "centrifuge": "^5.7.0"
+  },
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "npm run clean && tsc -p tsconfig.json && node scripts/build-umd.mjs",
+    "clean": "rm -rf dist",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test test/*.test.mjs test/openfeature/*.test.mjs test/react/*.test.mjs"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "typescript": "^5.9.2"
+  }
+}

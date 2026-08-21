@@ -1,0 +1,19 @@
+{
+  "name": "test-consumer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Minimal SDK integration demo consumer",
+  "main": "server.js",
+  "scripts": {
+    "build:sdk": "npm --prefix ../consumer-sdk run build",
+    "setup:from-consumer-app": "node scripts/setup-from-consumer-app.js",
+    "validate": "node scripts/validate-config.js",
+    "prestart": "npm run build:sdk",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "http-proxy": "^1.18.1"
+  }
+}

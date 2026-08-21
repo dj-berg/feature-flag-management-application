@@ -1,0 +1,23 @@
+{
+  "name": "consumer-app",
+  "version": "1.0.0",
+  "description": "Capital None feature flag consumer application",
+  "main": "server.js",
+  "scripts": {
+    "build:sdk": "npm --prefix ../consumer-sdk run build",
+    "build": "node scripts/build-app.mjs",
+    "prestart": "npm run build:sdk && npm run build",
+    "start": "node server.js",
+    "test:smoke": "npm run build:sdk && node --test test/sdk-smoke.test.mjs"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.840.0",
+    "@aws-sdk/lib-dynamodb": "^3.840.0",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/preset-react": "^7.28.5"
+  }
+}

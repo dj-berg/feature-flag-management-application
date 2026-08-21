@@ -1,0 +1,285 @@
+:root {
+    --navy: #003a70;
+    --blue: #0056a6;
+    --red: #d03027;
+
+    --page: #f5f7fa;
+    --surface: #ffffff;
+
+    --text: #1b2b3a;
+    --muted: #64748b;
+
+    --border: #e5e7eb;
+
+    --shadow: 0 8px 24px rgba(0, 0, 0, .06);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--page);
+    color: var(--text);
+    font-family: Inter, Arial, sans-serif;
+}
+
+.page {
+    max-width: 1250px;
+    margin: 40px auto;
+    padding: 0 24px;
+}
+
+.navbar {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+}
+
+.logo {
+    font-size: 1.7rem;
+    font-weight: 700;
+}
+
+.capital {
+    color: var(--navy);
+}
+
+.none {
+    color: var(--red);
+}
+
+nav {
+    display: flex;
+    gap: 32px;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--muted);
+    font-weight: 500;
+}
+
+nav a:hover {
+    color: var(--navy);
+}
+
+.profile {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+}
+
+.hero {
+    margin-top: 30px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: white;
+    border-radius: 14px;
+    padding: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+}
+
+.hero h1 {
+    font-size: 2.4rem;
+    font-weight: 600;
+}
+
+.hero p {
+    margin-top: 10px;
+    opacity: .9;
+    font-size: 1.05rem;
+}
+
+.hero button {
+    background: white;
+    color: var(--navy);
+    border: none;
+    border-radius: 8px;
+    padding: 14px 24px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+section {
+    margin-top: 40px;
+}
+
+section h2 {
+    margin-bottom: 18px;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.accounts,
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.account {
+    background: white;
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--navy);
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+}
+
+.feature-card {
+    display: none;
+    background: white;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--red);
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+}
+
+.feature-card.visible {
+    display: block;
+}
+
+.account h3,
+.feature-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.account p,
+.feature-card p {
+    color: var(--muted);
+    margin-top: 10px;
+    line-height: 1.5;
+}
+
+.account h2 {
+    margin: 16px 0 10px;
+    font-size: 2rem;
+    color: var(--navy);
+}
+
+.account small {
+    color: var(--muted);
+}
+
+.account a {
+    display: inline-block;
+    margin-top: 18px;
+    color: var(--blue);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.feature-card button {
+    margin-top: 24px;
+    background: var(--red);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.announcement {
+    margin-top: 40px;
+    background: white;
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--red);
+    border-radius: 12px;
+    padding: 26px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+}
+
+.announcement h3 {
+    font-size: 1.2rem;
+    margin-bottom: 6px;
+}
+
+.announcement p {
+    color: var(--muted);
+}
+
+.announcement button {
+    background: var(--navy);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 22px;
+    cursor: pointer;
+}
+
+footer {
+    margin: 50px 0 20px;
+    text-align: center;
+    color: var(--muted);
+}
+
+footer small {
+    display: block;
+    margin-top: 8px;
+}
+
+button {
+    transition: .2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    opacity: .95;
+}
+
+.account,
+.feature-card {
+    transition: transform .2s ease;
+}
+
+.account:hover,
+.feature-card:hover {
+    transform: translateY(-3px);
+}
+
+@media (max-width: 900px) {
+
+    .navbar,
+    .hero,
+    .announcement {
+        flex-direction: column;
+        gap: 24px;
+        text-align: center;
+    }
+
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 18px;
+    }
+
+    .hero {
+        padding: 36px;
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+    }
+}

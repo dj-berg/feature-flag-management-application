@@ -1,0 +1,15 @@
+aws_region = "us-east-1"
+
+vpc_id             = "vpc-REPLACE_ME"
+public_subnet_ids  = ["subnet-REPLACE_ME"]
+msk_bootstrap_brokers_iam = "REPLACE_ME"
+msk_security_group_id     = "sg-REPLACE_ME"
+msk_cluster_arn            = "arn:aws:kafka:REPLACE_ME"
+dynamodb_table_arn        = "arn:aws:dynamodb:REPLACE_ME"
+my_ip_cidr                = "203.0.113.10/32"
+
+consumer_jwt_public_key = <<EOF
+-----BEGIN PUBLIC KEY-----
+REPLACE_ME
+-----END PUBLIC KEY-----
+EOF

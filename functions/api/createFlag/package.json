@@ -1,0 +1,11 @@
+{
+  "name": "create-flag",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "type": "commonjs",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.888.0",
+    "@aws-sdk/util-dynamodb": "^3.888.0"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "consumer-auth",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "seed": "node seed.js",
+    "test:auth-flow": "node test-auth-flow.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.888.0",
+    "@aws-sdk/util-dynamodb": "^3.888.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

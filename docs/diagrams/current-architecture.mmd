@@ -1,0 +1,27 @@
+flowchart LR
+    Client[Client App]
+    LocalApp[local-app / consumer-app]
+    APIGW[API Gateway\nPOST /flags]
+    Auth[Gateway Authorizer\nCognito JWT + scopes]
+    CreateFlag[createFlag Lambda]
+    DDB[(DynamoDB\nPK: flagKey)]
+    Stream[DynamoDB Stream]
+    Publisher[stream-publisher Lambda]
+    Kafka[(MSK topic\nfeature-flag-changes)]
+    Bridge[Centrifugo Bridge\nECS sidecar process]
+    Centrifugo[Centrifugo]
+    SSE[SSE /connection/uni_sse]
+
+    Client --> LocalApp
+    LocalApp --> APIGW
+    APIGW --> Auth
+    Auth --> APIGW
+    APIGW --> CreateFlag
+    CreateFlag --> DDB
+    DDB --> Stream
+    Stream --> Publisher
+    Publisher --> Kafka
+    Kafka --> Bridge
+    Bridge --> Centrifugo
+    Centrifugo --> SSE
+    SSE --> Client
